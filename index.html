@@ -4,48 +4,52 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Αιθέριος | Virtual World</title>
+<title>ΑΙΘΕΡΙΟΣ | Enchanted Nature World</title>
 <style>
 * { box-sizing: border-box; }
 body {
   margin: 0;
   overflow: hidden;
-  background: #071b2d;
   font-family: Arial, sans-serif;
+  background: #071b2d;
 }
-#info {
+#panel {
   position: fixed;
   top: 20px;
   left: 20px;
+  z-index: 2;
   color: white;
   background: #102b46dd;
-  padding: 16px 20px;
-  border: 1px solid #75d9ed;
-  border-radius: 12px;
-  z-index: 2;
+  border: 1px solid #8be6dc;
+  border-radius: 14px;
+  padding: 17px 22px;
+  pointer-events: none;
 }
-#info h2 { margin: 0 0 7px; color: #79e5f5; }
-#info p { margin: 5px 0; font-size: 13px; }
-#loading {
+#panel h2 { margin: 0 0 8px; color: #8be6dc; }
+#panel p { margin: 5px 0; font-size: 13px; }
+#hint {
   position: fixed;
-  inset: 0;
-  display: grid;
-  place-items: center;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
   color: white;
-  background: #071b2d;
-  z-index: 5;
+  background: #102b46bb;
+  padding: 10px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  pointer-events: none;
 }
 </style>
 </head>
 <body>
 
-<div id="loading">Ο ΑΙΘΕΡΙΟΣ δημιουργείται...</div>
-<div id="info">
+<div id="panel">
   <h2>✦ ΑΙΘΕΡΙΟΣ</h2>
-  <p>Καλώς ήρθες στον δικό σου κόσμο!</p>
-  <p>W A S D ή βελάκια: Κίνηση</p>
-  <p>Ποντίκι: Περιστροφή κάμερας</p>
+  <p>Ένας κόσμος φυσικής ομορφιάς και μαγείας</p>
+  <p>Σύρε το ποντίκι για να εξερευνήσεις</p>
+  <p>Ροδέλα: Κοντινή και μακρινή θέα</p>
 </div>
+<div id="hint">Καλώς ήρθες στον μαγικό φυσικό κόσμο του ΑΙΘΕΡΙΟΥ</div>
 
 <script type="importmap">
 {
@@ -61,206 +65,354 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x86c9e8);
-scene.fog = new THREE.Fog(0x86c9e8, 35, 100);
+scene.background = new THREE.Color(0x91cde8);
+scene.fog = new THREE.Fog(0x91cde8, 45, 115);
 
 const camera = new THREE.PerspectiveCamera(
-  60, window.innerWidth / window.innerHeight, 0.1, 200
+  55, innerWidth / innerHeight, 0.1, 250
 );
-camera.position.set(13, 12, 18);
+camera.position.set(24, 22, 30);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.15;
 document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
-controls.target.set(0, 1, 0);
+controls.target.set(0, 3, 0);
 controls.maxPolarAngle = Math.PI / 2.05;
-controls.minDistance = 7;
-controls.maxDistance = 35;
+controls.minDistance = 8;
+controls.maxDistance = 75;
 
-// Φωτισμός
-scene.add(new THREE.HemisphereLight(0xffffff, 0x45634a, 2));
+// Φυσικός φωτισμός
+scene.add(new THREE.HemisphereLight(0xdaf3ff, 0x526c42, 2));
 
-const sun = new THREE.DirectionalLight(0xffffff, 3);
-sun.position.set(-10, 20, 10);
+const sun = new THREE.DirectionalLight(0xffe8bc, 3);
+sun.position.set(-25, 35, 20);
 sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
 scene.add(sun);
 
-// Νερό
-const water = new THREE.Mesh(
-  new THREE.CircleGeometry(48, 80),
+// Θάλασσα
+const sea = new THREE.Mesh(
+  new THREE.CircleGeometry(90, 96),
   new THREE.MeshStandardMaterial({
-    color: 0x269ebc, roughness: 0.35, metalness: 0.15
+    color: 0x168eaf,
+    roughness: 0.25,
+    metalness: 0.25
   })
 );
-water.rotation.x = -Math.PI / 2;
-water.position.y = -1.3;
-scene.add(water);
+sea.rotation.x = -Math.PI / 2;
+sea.position.y = -2;
+scene.add(sea);
 
-// Κεντρικό νησί
-const island = new THREE.Mesh(
-  new THREE.CylinderGeometry(13, 15, 2.2, 64),
-  new THREE.MeshStandardMaterial({ color: 0x63a64e, roughness: 1 })
+// Μεγάλο φυσικό νησί
+const ground = new THREE.Mesh(
+  new THREE.CylinderGeometry(23, 26, 3, 96),
+  new THREE.MeshStandardMaterial({
+    color: 0x548d48,
+    roughness: 1
+  })
 );
-island.position.y = -0.1;
-island.receiveShadow = true;
-island.castShadow = true;
-scene.add(island);
+ground.position.y = -0.6;
+ground.receiveShadow = true;
+scene.add(ground);
 
-// Λόφος
-const hill = new THREE.Mesh(
-  new THREE.SphereGeometry(5, 32, 24),
-  new THREE.MeshStandardMaterial({ color: 0x80bd58 })
+// Πράσινο έδαφος
+const meadow = new THREE.Mesh(
+  new THREE.CircleGeometry(23, 96),
+  new THREE.MeshStandardMaterial({
+    color: 0x79b95e,
+    roughness: 1
+  })
 );
-hill.position.set(-4, 1.4, -4);
-hill.scale.y = 0.55;
-hill.receiveShadow = true;
-scene.add(hill);
+meadow.rotation.x = -Math.PI / 2;
+meadow.position.y = 0.93;
+meadow.receiveShadow = true;
+scene.add(meadow);
 
-// Κεντρική πλατεία
-const plaza = new THREE.Mesh(
-  new THREE.CircleGeometry(4, 48),
-  new THREE.MeshStandardMaterial({ color: 0xd9c49a })
-);
-plaza.rotation.x = -Math.PI / 2;
-plaza.position.y = 1.02;
-scene.add(plaza);
+// Βουνά με χιονισμένες κορυφές
+function mountain(x, z, radius, height) {
+  const group = new THREE.Group();
 
-// Μικρό κτίριο
-const building = new THREE.Group();
-const walls = new THREE.Mesh(
-  new THREE.BoxGeometry(3.5, 2.5, 3),
-  new THREE.MeshStandardMaterial({ color: 0xf0d7ad })
-);
-walls.position.y = 2.25;
-walls.castShadow = true;
-building.add(walls);
+  const rock = new THREE.Mesh(
+    new THREE.ConeGeometry(radius, height, 7),
+    new THREE.MeshStandardMaterial({
+      color: 0x687c70,
+      flatShading: true
+    })
+  );
+  rock.position.y = height / 2;
+  rock.castShadow = true;
+  group.add(rock);
 
-const roof = new THREE.Mesh(
-  new THREE.ConeGeometry(2.8, 2, 4),
-  new THREE.MeshStandardMaterial({ color: 0x9c5142 })
+  const snow = new THREE.Mesh(
+    new THREE.ConeGeometry(radius * 0.43, height * 0.38, 7),
+    new THREE.MeshStandardMaterial({
+      color: 0xf1f6ed,
+      flatShading: true
+    })
+  );
+  snow.position.y = height * 0.82;
+  group.add(snow);
+
+  group.position.set(x, 0.8, z);
+  scene.add(group);
+}
+
+mountain(-13, -12, 8, 19);
+mountain(-3, -16, 10, 24);
+mountain(9, -13, 8, 20);
+mountain(16, -5, 6, 15);
+mountain(-17, 0, 6, 14);
+
+// Κεντρική κρυστάλλινη λίμνη
+const lake = new THREE.Mesh(
+  new THREE.CircleGeometry(7, 64),
+  new THREE.MeshPhysicalMaterial({
+    color: 0x35c4d7,
+    roughness: 0.12,
+    metalness: 0.2,
+    transparent: true,
+    opacity: 0.92
+  })
 );
-roof.position.y = 4.5;
-roof.rotation.y = Math.PI / 4;
-roof.castShadow = true;
-building.add(roof);
-building.position.set(5, 0, -5);
-scene.add(building);
+lake.rotation.x = -Math.PI / 2;
+lake.position.set(0, 1.03, -5);
+scene.add(lake);
+
+// Ποτάμι
+const riverPath = new THREE.CatmullRomCurve3([
+  new THREE.Vector3(0, 1.08, -10),
+  new THREE.Vector3(2, 1.08, -7),
+  new THREE.Vector3(5, 1.08, -3),
+  new THREE.Vector3(4, 1.08, 2),
+  new THREE.Vector3(8, 1.08, 7),
+  new THREE.Vector3(12, 1.08, 12)
+]);
+
+const river = new THREE.Mesh(
+  new THREE.TubeGeometry(riverPath, 80, 0.65, 10, false),
+  new THREE.MeshStandardMaterial({
+    color: 0x42c6e0,
+    roughness: 0.2,
+    metalness: 0.25
+  })
+);
+scene.add(river);
+
+// Καταρράκτες
+const waterfalls = [];
+
+function waterfall(x, y, z, height) {
+  const water = new THREE.Mesh(
+    new THREE.PlaneGeometry(2.3, height),
+    new THREE.MeshBasicMaterial({
+      color: 0x9cefff,
+      transparent: true,
+      opacity: 0.78,
+      side: THREE.DoubleSide
+    })
+  );
+  water.position.set(x, y, z);
+  scene.add(water);
+  waterfalls.push(water);
+
+  const pool = new THREE.Mesh(
+    new THREE.CircleGeometry(2.2, 32),
+    new THREE.MeshStandardMaterial({
+      color: 0x54c9e3,
+      roughness: 0.2
+    })
+  );
+  pool.rotation.x = -Math.PI / 2;
+  pool.position.set(x, 1.04, z + 1.5);
+  scene.add(pool);
+}
+
+waterfall(-4, 4.5, -10, 7);
+waterfall(7, 3.5, -11, 5);
 
 // Δέντρα
-function createTree(x, z, scale = 1) {
-  const tree = new THREE.Group();
+const trees = [];
+
+function tree(x, z, scale = 1) {
+  const group = new THREE.Group();
+
   const trunk = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.18, 0.28, 1.5, 8),
-    new THREE.MeshStandardMaterial({ color: 0x80502e })
+    new THREE.CylinderGeometry(0.17, 0.3, 2, 8),
+    new THREE.MeshStandardMaterial({ color: 0x795032 })
   );
   trunk.position.y = 1.7;
   trunk.castShadow = true;
-  tree.add(trunk);
+  group.add(trunk);
 
   for (let i = 0; i < 3; i++) {
     const leaves = new THREE.Mesh(
-      new THREE.ConeGeometry(1.15 - i * 0.12, 1.7, 9),
-      new THREE.MeshStandardMaterial({ color: i === 1 ? 0x32844c : 0x4caa5c })
+      new THREE.ConeGeometry(1.3 - i * 0.2, 2.2, 9),
+      new THREE.MeshStandardMaterial({
+        color: i === 1 ? 0x347e43 : 0x55a85b,
+        flatShading: true
+      })
     );
-    leaves.position.y = 2.5 + i * 0.75;
+    leaves.position.y = 2.3 + i * 1.1;
     leaves.castShadow = true;
-    tree.add(leaves);
+    group.add(leaves);
   }
 
-  tree.position.set(x, 0, z);
-  tree.scale.setScalar(scale);
-  scene.add(tree);
+  group.position.set(x, 0.95, z);
+  group.scale.setScalar(scale);
+  scene.add(group);
+  trees.push(group);
 }
 
-[
-  [-9,-5],[-10,2],[-7,8],[1,-10],[9,-8],
-  [10,1],[8,8],[-3,10],[3,8],[-10,-1]
-].forEach(([x,z],i) => createTree(x,z, i%3===0 ? 1.2 : 0.85));
+for (let i = 0; i < 65; i++) {
+  const angle = Math.random() * Math.PI * 2;
+  const radius = 9 + Math.random() * 12;
+  const x = Math.cos(angle) * radius;
+  const z = Math.sin(angle) * radius;
 
-// Διακοσμητικές πέτρες
-for (let i = 0; i < 22; i++) {
-  const a = Math.random() * Math.PI * 2;
-  const r = 6 + Math.random() * 6;
+  if (Math.hypot(x, z + 5) < 8) continue;
+  tree(x, z, 0.65 + Math.random() * 0.65);
+}
+
+// Βράχια
+for (let i = 0; i < 45; i++) {
+  const angle = Math.random() * Math.PI * 2;
+  const radius = 5 + Math.random() * 17;
+
   const rock = new THREE.Mesh(
-    new THREE.DodecahedronGeometry(0.35 + Math.random()*0.4, 0),
-    new THREE.MeshStandardMaterial({ color: 0x8c9889 })
+    new THREE.DodecahedronGeometry(0.3 + Math.random() * 0.65),
+    new THREE.MeshStandardMaterial({
+      color: 0x8b9887,
+      flatShading: true
+    })
   );
-  rock.position.set(Math.cos(a)*r, 0.8, Math.sin(a)*r);
+  rock.position.set(
+    Math.cos(angle) * radius,
+    1.1,
+    Math.sin(angle) * radius
+  );
   rock.castShadow = true;
   scene.add(rock);
 }
 
-// Παίκτης
-const player = new THREE.Group();
+// Αγριολούλουδα
+const flowerColors = [0xffe7a0, 0xf4a4ca, 0xffffff, 0xa99af2];
 
-const body = new THREE.Mesh(
-  new THREE.CapsuleGeometry(0.4, 0.8, 4, 8),
-  new THREE.MeshStandardMaterial({ color: 0x3978d5 })
+for (let i = 0; i < 180; i++) {
+  const angle = Math.random() * Math.PI * 2;
+  const radius = 5 + Math.random() * 16;
+  const x = Math.cos(angle) * radius;
+  const z = Math.sin(angle) * radius;
+
+  const flower = new THREE.Mesh(
+    new THREE.SphereGeometry(0.12, 7, 7),
+    new THREE.MeshStandardMaterial({
+      color: flowerColors[i % flowerColors.length],
+      emissive: flowerColors[i % flowerColors.length],
+      emissiveIntensity: 0.12
+    })
+  );
+  flower.position.set(x, 1.2 + Math.random() * 0.2, z);
+  scene.add(flower);
+}
+
+// Μαγικά φωτεινά σωματίδια
+const particleCount = 180;
+const positions = new Float32Array(particleCount * 3);
+
+for (let i = 0; i < particleCount; i++) {
+  positions[i * 3] = (Math.random() - 0.5) * 40;
+  positions[i * 3 + 1] = 1 + Math.random() * 12;
+  positions[i * 3 + 2] = (Math.random() - 0.5) * 40;
+}
+
+const particleGeometry = new THREE.BufferGeometry();
+particleGeometry.setAttribute(
+  'position',
+  new THREE.BufferAttribute(positions, 3)
 );
-body.position.y = 1.1;
-body.castShadow = true;
-player.add(body);
 
-const head = new THREE.Mesh(
-  new THREE.SphereGeometry(0.34, 20, 16),
-  new THREE.MeshStandardMaterial({ color: 0xffd1a6 })
+const particles = new THREE.Points(
+  particleGeometry,
+  new THREE.PointsMaterial({
+    color: 0xffefaa,
+    size: 0.16,
+    transparent: true,
+    opacity: 0.85
+  })
 );
-head.position.y = 1.9;
-head.castShadow = true;
-player.add(head);
+scene.add(particles);
 
-player.position.set(0, 1, 0);
-scene.add(player);
+// Απαλά σύννεφα
+const clouds = [];
 
-// Χειρισμός κίνησης
-const keys = {};
-window.addEventListener('keydown', e => {
-  keys[e.key.toLowerCase()] = true;
-});
-window.addEventListener('keyup', e => {
-  keys[e.key.toLowerCase()] = false;
-});
+for (let i = 0; i < 12; i++) {
+  const cloud = new THREE.Group();
+
+  for (let j = 0; j < 5; j++) {
+    const puff = new THREE.Mesh(
+      new THREE.SphereGeometry(1.5 + Math.random(), 12, 10),
+      new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        roughness: 1
+      })
+    );
+    puff.position.set(j * 1.3 - 2.5, Math.random(), 0);
+    puff.scale.y = 0.55;
+    cloud.add(puff);
+  }
+
+  cloud.position.set(
+    (Math.random() - 0.5) * 100,
+    24 + Math.random() * 12,
+    (Math.random() - 0.5) * 80
+  );
+
+  scene.add(cloud);
+  clouds.push(cloud);
+}
+
+// Κινούμενη ατμόσφαιρα
+const clock = new THREE.Clock();
 
 function animate() {
   requestAnimationFrame(animate);
 
-  const speed = 0.09;
-  let dx = 0, dz = 0;
+  const t = clock.getElapsedTime();
 
-  if (keys['w'] || keys['arrowup']) dz -= speed;
-  if (keys['s'] || keys['arrowdown']) dz += speed;
-  if (keys['a'] || keys['arrowleft']) dx -= speed;
-  if (keys['d'] || keys['arrowright']) dx += speed;
-
-  player.position.x += dx;
-  player.position.z += dz;
-
-  const distance = Math.hypot(player.position.x, player.position.z);
-  if (distance > 10) {
-    player.position.x *= 10 / distance;
-    player.position.z *= 10 / distance;
-  }
-
-  controls.target.set(
-    player.position.x, 1, player.position.z
-  );
   controls.update();
+
+  particles.rotation.y = t * 0.025;
+
+  waterfalls.forEach((w, i) => {
+    w.material.opacity = 0.65 + Math.sin(t * 3 + i) * 0.12;
+  });
+
+  clouds.forEach((cloud, i) => {
+    cloud.position.x += 0.003 + i * 0.0001;
+    if (cloud.position.x > 60) cloud.position.x = -60;
+  });
+
+  trees.forEach((tree, i) => {
+    tree.rotation.z = Math.sin(t * 0.7 + i) * 0.012;
+  });
+
   renderer.render(scene, camera);
 }
 
 window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(innerWidth, innerHeight);
 });
 
-document.getElementById('loading').remove();
 animate();
 </script>
 </body>
